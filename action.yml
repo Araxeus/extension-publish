@@ -7,7 +7,18 @@ branding:
   color: 'green'
 
 inputs:
+  version-file:
+    description: >
+      Path to a JSON file whose top-level "version" value is used to fill "{version}" in archive paths.
+      Defaults to package.json and is used by all stores unless overridden.
+    required: false
+
   # Chrome Web Store
+  chrome-version-file:
+    description: >
+      Store-specific path to a JSON version file. Overrides version-file for Chrome.
+    required: false
+
   chrome-client-id:
     description: >
       OAuth2 client ID from Google Cloud Console.
@@ -73,6 +84,11 @@ inputs:
     default: 'false'
 
   # Firefox Add-ons
+  firefox-version-file:
+    description: >
+      Store-specific path to a JSON version file. Overrides version-file for Firefox.
+    required: false
+
   firefox-api-key:
     description: >
       AMO API key (issuer) obtained from addons.mozilla.org/developers/addon/api/key/.
@@ -137,6 +153,11 @@ inputs:
     required: false
 
   # Edge Add-ons
+  edge-version-file:
+    description: >
+      Store-specific path to a JSON version file. Overrides version-file for Edge.
+    required: false
+
   edge-api-key:
     description: >
       API key from Partner Center (Publish API page).

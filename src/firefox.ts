@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
 import { readFileSync } from 'node:fs'
 import { basename } from 'node:path'
-import { assertOk, makeJwt, PublishResult } from './utils'
+import { assertOk, fillVersion, makeJwt, PublishResult } from './utils'
 
 const BASE_URL = 'https://addons.mozilla.org/api/v5'
 
@@ -112,9 +112,10 @@ export async function publishToFirefox(): Promise<PublishResult> {
   const apiKey = core.getInput('firefox-api-key')
   const apiSecret = core.getInput('firefox-api-secret')
   const extensionId = core.getInput('firefox-extension-id')
-  const xpiPath = core.getInput('firefox-xpi-path')
+  const rawXpiPath = core.getInput('firefox-xpi-path')
+  const versionFile = core.getInput('firefox-version-file') || core.getInput('version-file') || undefined
 
-  if (!apiKey && !apiSecret && !extensionId && !xpiPath) {
+  if (!apiKey && !apiSecret && !extensionId && !rawXpiPath) {
     core.info('Firefox Add-ons: No inputs provided, skipping')
     return { status: 'skipped', details: 'No inputs provided' }
   }
@@ -144,6 +145,7 @@ export async function publishToFirefox(): Promise<PublishResult> {
   const resolvedCompatibility = Object.keys(compatibility).length > 0 ? compatibility : undefined
 
   // Upload
+  const xpiPath = fillVersion(rawXpiPath, versionFile)
   core.info(`Firefox Add-ons: Uploading ${xpiPath} (channel: ${channel})`)
   let upload = await uploadXpi(apiKey, apiSecret, xpiPath, channel)
   core.info(`  UUID: ${upload.uuid}`)

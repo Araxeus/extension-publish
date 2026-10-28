@@ -1,4 +1,5 @@
 import { createHmac, randomUUID } from 'node:crypto'
+import { readFileSync } from 'node:fs'
 
 export interface PublishResult {
   status: 'success' | 'skipped'
@@ -23,5 +24,19 @@ export async function assertOk(response: Response, context: string): Promise<voi
   if (!response.ok) {
     const body = await response.text()
     throw new Error(`${context}: HTTP ${response.status}: ${body}`)
+  }
+}
+
+export function fillVersion(path: string, versionFile = "package.json"): string {
+  try {
+    if (!path.includes("{version}")) {
+      return path
+    }
+    return path.replace(
+      '{version}',
+      JSON.parse(readFileSync(versionFile).toString()).version,
+    );
+  } catch {
+    return path
   }
 }

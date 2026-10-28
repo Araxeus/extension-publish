@@ -129,6 +129,15 @@ All stores are optional, only the stores with provided inputs will run.
 | `edge-publish` | No | `true` | Set to `false` to upload without publishing |
 | `edge-notes` | No | - | Certification notes for Microsoft reviewers |
 
+### Version Files
+
+| Input | Required | Default | Description |
+|---|---|---|---|
+| `version-file` | No | `package.json` | JSON file with a top-level `version` value, used to replace `{version}` in archive paths for all stores |
+| `chrome-version-file` | No | `version-file` | Chrome-specific version file; overrides `version-file` |
+| `firefox-version-file` | No | `version-file` | Firefox-specific version file; overrides `version-file` |
+| `edge-version-file` | No | `version-file` | Edge-specific version file; overrides `version-file` |
+
 ## 📤 Outputs
 
 | Output | Store | Description |

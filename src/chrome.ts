@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
 import { readFileSync } from 'node:fs'
-import { assertOk, PublishResult } from './utils'
+import { assertOk, fillVersion, PublishResult } from './utils'
 
 const OAUTH_TOKEN_URL = 'https://oauth2.googleapis.com/token'
 const BASE_URL = 'https://chromewebstore.googleapis.com'
@@ -156,9 +156,10 @@ export async function publishToChrome(): Promise<PublishResult> {
   const refreshToken = core.getInput('chrome-refresh-token')
   const publisherId = core.getInput('chrome-publisher-id')
   const extensionId = core.getInput('chrome-extension-id')
-  const zipPath = core.getInput('chrome-zip-path')
+  const rawZipPath = core.getInput('chrome-zip-path')
+  const versionFile = core.getInput('chrome-version-file') || core.getInput('version-file') || undefined
 
-  if (!clientId && !clientSecret && !refreshToken && !publisherId && !extensionId && !zipPath) {
+  if (!clientId && !clientSecret && !refreshToken && !publisherId && !extensionId && !rawZipPath) {
     core.info('Chrome Web Store: No inputs provided, skipping')
     return { status: 'skipped', details: 'No inputs provided' }
   }
@@ -175,6 +176,7 @@ export async function publishToChrome(): Promise<PublishResult> {
   const accessToken = await getAccessToken(clientId, clientSecret, refreshToken)
 
   // Upload
+  const zipPath = fillVersion(rawZipPath, versionFile)
   core.info(`Chrome Web Store: Uploading ${zipPath}`)
   const upload = await uploadZip(accessToken, publisherId, extensionId, zipPath)
   core.info(`  Initial upload state: ${upload.uploadState}`)
