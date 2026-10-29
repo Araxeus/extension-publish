@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
 import { readFileSync } from 'node:fs'
-import { assertOk, fillVersion, PublishResult } from './utils'
+import { assertOk, fillVersion, type PublishResult } from './utils'
 
 const BASE_URL = 'https://api.addons.microsoftedge.microsoft.com'
 
@@ -107,10 +107,11 @@ export async function publishToEdge(): Promise<PublishResult> {
   const apiKey = core.getInput('edge-api-key')
   const clientId = core.getInput('edge-client-id')
   const productId = core.getInput('edge-product-id')
+  const versionFile = core.getInput('version-file') || undefined
   const rawZipPath = core.getInput('edge-zip-path')
-  const versionFile = core.getInput('edge-version-file') || core.getInput('version-file') || undefined
+  const zipPath = fillVersion(rawZipPath, versionFile)
 
-  if (!apiKey && !clientId && !productId && !rawZipPath) {
+  if (!apiKey && !clientId && !productId && !zipPath) {
     core.info('Edge Add-ons: No inputs provided, skipping')
     return { status: 'skipped', details: 'No inputs provided' }
   }
@@ -119,7 +120,6 @@ export async function publishToEdge(): Promise<PublishResult> {
   const notes = core.getInput('edge-notes') || undefined
 
   // Upload
-  const zipPath = fillVersion(rawZipPath, versionFile)
   core.info(`Edge Add-ons: Uploading ${zipPath}`)
   const uploadOperationId = await uploadPackage(apiKey, clientId, productId, zipPath)
   core.info(`  Upload operation ID: ${uploadOperationId}`)

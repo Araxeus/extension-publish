@@ -50,5 +50,5 @@ export function fillVersion(path: string, versionFile = 'package.json'): string 
     throw new Error(`Version file "${versionFile}" must contain a non-empty string "version" field`)
   }
 
-  return path.replace('{version}', versionData.version)
+  return path.replaceAll('{version}', versionData.version)
 }
